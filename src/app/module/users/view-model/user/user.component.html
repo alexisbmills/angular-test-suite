@@ -1,0 +1,11 @@
+<p><a [routerLink]="['/']">Back</a></p>
+<hr>
+<div>
+  <p>Name: {{user.firstName}} {{user.lastName}}</p>
+  <p>Email: {{user.email}}</p>
+  <p>Active: {{user.isActive ? 'Yes' : 'No'}} <button [disabled]="state.updateActive" (click)="toggleActive(!user.isActive)">Update</button> </p>
+  <img
+      [src]="user.image.url"
+      class="photo"
+      alt="{{user.firstName}} {{user.lastName}}"/>
+</div>
