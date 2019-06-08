@@ -1,6 +1,9 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+const coverageDirectory = require('path').join(__dirname, '..', 'coverage');
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -8,6 +11,7 @@ module.exports = function (config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
+      require('karma-junit-reporter'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
@@ -16,16 +20,41 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, '../coverage'),
+      dir: coverageDirectory,
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
+    },
+    junitReporter: {
+      outputDir: coverageDirectory,
+      outputFile: 'junit.xml',
+      useBrowserName: false
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'HeadlessChrome'],
+    browserDisconnectTolerance: 2,
+    browserNoActivityTimeout: 120000,
+    customLaunchers: {
+      HeadlessChrome: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-setuid-sandbox',
+          '--remote-debugging-port=9222',
+          '--enable-logging',
+          '--user-data-dir=./karma-chrome',
+          '--v=1',
+          '--disable-background-timer-throttling',
+          '--disable-renderer-backgrounding',
+          '--proxy-bypass-list=*',
+          "--proxy-server='direct://'"
+        ]
+      }
+    },
     singleRun: false
   });
 };
